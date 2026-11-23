@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forja Gym | Entrena fuerte, vive mejor</title>
+  <meta name="description" content="Forja Gym: musculación, clases colectivas y entrenamiento personal. Primera semana gratis.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="chatbot.css">
+</head>
+<body>
+
+  <!-- ===== CABECERA / MENÚ ===== -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="#inicio" class="logo">FORJA<span>GYM</span></a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav" id="nav">
+        <a href="#servicios">Servicios</a>
+        <a href="#horario">Horario</a>
+        <a href="#precios">Precios</a>
+        <a href="#equipo">Equipo</a>
+        <a href="#contacto" class="btn btn--small">Prueba gratis</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="inicio">
+    <div class="container hero__content">
+      <p class="hero__tag">Abierto 24/7 · Madrid Centro</p>
+      <h1>Forja tu mejor<br><span>versión</span></h1>
+      <p class="hero__text">Equipamiento de última generación, entrenadores certificados y una comunidad que te empuja a superarte cada día.</p>
+      <div class="hero__buttons">
+        <a href="#contacto" class="btn">Primera semana gratis</a>
+        <a href="#precios" class="btn btn--outline">Ver tarifas</a>
+      </div>
+      <div class="stats">
+        <div><strong data-count="1200">0</strong><span>Socios activos</span></div>
+        <div><strong data-count="40">0</strong><span>Clases semanales</span></div>
+        <div><strong data-count="12">0</strong><span>Entrenadores</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICIOS ===== -->
+  <section class="section" id="servicios">
+    <div class="container">
+      <h2 class="section__title">Nuestros <span>servicios</span></h2>
+      <p class="section__subtitle">Todo lo que necesitas para alcanzar tus objetivos, en un solo lugar.</p>
+
+      <div class="grid grid--3">
+        <article class="card reveal">
+          <div class="card__icon">🏋️</div>
+          <h3>Musculación</h3>
+          <p>Más de 1.500 m² con máquinas de última generación, peso libre y zona de powerlifting.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">🔥</div>
+          <h3>Clases colectivas</h3>
+          <p>HIIT, spinning, yoga, boxeo y cross training. Más de 40 clases cada semana.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">🎯</div>
+          <h3>Entrenamiento personal</h3>
+          <p>Un plan hecho a tu medida con seguimiento semanal de tu progreso.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">🥗</div>
+          <h3>Nutrición</h3>
+          <p>Asesoramiento nutricional para que tu alimentación acompañe a tu entrenamiento.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">🧖</div>
+          <h3>Zona wellness</h3>
+          <p>Sauna, baño turco y zona de estiramientos para recuperarte como un profesional.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">📱</div>
+          <h3>App de socio</h3>
+          <p>Reserva clases, consulta tus rutinas y registra tus marcas desde el móvil.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HORARIO ===== -->
+  <section class="section section--dark" id="horario">
+    <div class="container">
+      <h2 class="section__title">Horario de <span>clases</span></h2>
+      <p class="section__subtitle">Elige un día para ver las clases.</p>
+
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-day="lunes">Lun</button>
+        <button class="tab" data-day="martes">Mar</button>
+        <button class="tab" data-day="miercoles">Mié</button>
+        <button class="tab" data-day="jueves">Jue</button>
+        <button class="tab" data-day="viernes">Vie</button>
+        <button class="tab" data-day="sabado">Sáb</button>
+      </div>
+
+      <ul class="schedule" id="schedule">
+        <!-- Se rellena con JavaScript (script.js) -->
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== PRECIOS ===== -->
+  <section class="section" id="precios">
+    <div class="container">
+      <h2 class="section__title">Elige tu <span>plan</span></h2>
+      <p class="section__subtitle">Sin matrícula y sin permanencia. Cancela cuando quieras.</p>
+
+      <div class="grid grid--3 pricing">
+        <article class="price-card reveal">
+          <h3>Básico</h3>
+          <p class="price">29€<span>/mes</span></p>
+          <ul>
+            <li>✔ Acceso a sala de musculación</li>
+            <li>✔ Horario de 6:00 a 23:00</li>
+            <li>✔ App de socio</li>
+            <li class="off">✘ Clases colectivas</li>
+            <li class="off">✘ Zona wellness</li>
+          </ul>
+          <a href="#contacto" class="btn btn--outline">Empezar</a>
+        </article>
+
+        <article class="price-card price-card--featured reveal">
+          <span class="badge">Más popular</span>
+          <h3>Premium</h3>
+          <p class="price">45€<span>/mes</span></p>
+          <ul>
+            <li>✔ Acceso 24/7</li>
+            <li>✔ Clases colectivas ilimitadas</li>
+            <li>✔ Zona wellness</li>
+            <li>✔ App de socio</li>
+            <li class="off">✘ Entrenador personal</li>
+          </ul>
+          <a href="#contacto" class="btn">Empezar</a>
+        </article>
+
+        <article class="price-card reveal">
+          <h3>Élite</h3>
+          <p class="price">79€<span>/mes</span></p>
+          <ul>
+            <li>✔ Todo lo del plan Premium</li>
+            <li>✔ 4 sesiones de entrenador personal</li>
+            <li>✔ Plan de nutrición</li>
+            <li>✔ Taquilla privada</li>
+            <li>✔ Invitado gratis 2 veces/mes</li>
+          </ul>
+          <a href="#contacto" class="btn btn--outline">Empezar</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EQUIPO ===== -->
+  <section class="section section--dark" id="equipo">
+    <div class="container">
+      <h2 class="section__title">Nuestro <span>equipo</span></h2>
+      <p class="section__subtitle">Profesionales certificados que te acompañan en cada repetición.</p>
+
+      <div class="grid grid--4">
+        <article class="trainer reveal">
+          <div class="trainer__avatar" style="--hue: 15">LM</div>
+          <h3>Laura Martín</h3>
+          <p>Fuerza y powerlifting</p>
+        </article>
+        <article class="trainer reveal">
+          <div class="trainer__avatar" style="--hue: 200">DR</div>
+          <h3>David Ruiz</h3>
+          <p>HIIT y cross training</p>
+        </article>
+        <article class="trainer reveal">
+          <div class="trainer__avatar" style="--hue: 140">SG</div>
+          <h3>Sara Gómez</h3>
+          <p>Yoga y movilidad</p>
+        </article>
+        <article class="trainer reveal">
+          <div class="trainer__avatar" style="--hue: 280">AP</div>
+          <h3>Álex Pérez</h3>
+          <p>Boxeo y nutrición</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== OPINIONES ===== -->
+  <section class="section" id="opiniones">
+    <div class="container">
+      <h2 class="section__title">Lo que dicen <span>nuestros socios</span></h2>
+      <div class="grid grid--3">
+        <blockquote class="testimonial reveal">
+          <p>"En 6 meses he perdido 12 kilos. Los entrenadores se implican de verdad."</p>
+          <cite>— Marta, socia desde 2024</cite>
+        </blockquote>
+        <blockquote class="testimonial reveal">
+          <p>"Las clases de boxeo son lo mejor de mi semana. El ambiente es increíble."</p>
+          <cite>— Javier, socio desde 2023</cite>
+        </blockquote>
+        <blockquote class="testimonial reveal">
+          <p>"Poder ir a las 5 de la mañana sin agobios es justo lo que necesitaba."</p>
+          <cite>— Elena, socia desde 2025</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACTO ===== -->
+  <section class="section section--dark" id="contacto">
+    <div class="container contact">
+      <div class="contact__info">
+        <h2 class="section__title section__title--left">Tu primera semana <span>es gratis</span></h2>
+        <p>Déjanos tus datos y te llamamos para organizar tu visita. Sin compromiso.</p>
+        <ul class="contact__list">
+          <li>📍 Calle Ejemplo 123, Madrid</li>
+          <li>📞 600 000 000</li>
+          <li>✉️ hola@forjagym.es</li>
+          <li>🕒 Abierto 24 horas, 7 días</li>
+        </ul>
+      </div>
+
+      <form class="form" id="contactForm" novalidate>
+        <div class="form__group">
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+          <small class="form__error"></small>
+        </div>
+        <div class="form__group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+          <small class="form__error"></small>
+        </div>
+        <div class="form__group">
+          <label for="telefono">Teléfono</label>
+          <input type="tel" id="telefono" name="telefono" placeholder="600 000 000" required>
+          <small class="form__error"></small>
+        </div>
+        <div class="form__group">
+          <label for="plan">Plan que te interesa</label>
+          <select id="plan" name="plan">
+            <option>Básico</option>
+            <option selected>Premium</option>
+            <option>Élite</option>
+            <option>Aún no lo sé</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn--full">Quiero mi semana gratis</button>
+        <p class="form__success" id="formSuccess" hidden>✅ ¡Gracias! Te llamaremos en menos de 24 horas.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== PIE ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <a href="#inicio" class="logo">FORJA<span>GYM</span></a>
+      <p>© <span id="year"></span> Forja Gym. Proyecto de demostración.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="chatbot.js"></script>
+</body>
+</html>
