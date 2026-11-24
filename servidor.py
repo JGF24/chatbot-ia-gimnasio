@@ -24,10 +24,13 @@ import csv
 import json
 import os
 import re
+import smtplib
 import threading
 import time
+import urllib.request
 from collections import defaultdict, deque
 from datetime import datetime
+from email.message import EmailMessage
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -50,6 +53,15 @@ LIMITE_CHAT = 20         # preguntas cada 10 minutos
 LIMITE_CONTACTO = 5      # formularios cada 10 minutos
 
 ORIGENES_PERMITIDOS = {o.strip().rstrip("/") for o in os.environ.get("ORIGENES_PERMITIDOS", "").split(",") if o.strip()}
+
+# Dónde reenviar cada contacto para conservarlo fuera del servidor (opcional)
+WEBHOOK_CONTACTOS = os.environ.get("WEBHOOK_CONTACTOS", "").strip()
+CORREO_DESTINO = os.environ.get("CORREO_DESTINO", "").strip()
+SMTP_HOST = os.environ.get("SMTP_HOST", "").strip()
+SMTP_PUERTO = int(os.environ.get("SMTP_PUERTO", 587))
+SMTP_USUARIO = os.environ.get("SMTP_USUARIO", "").strip()
+SMTP_CLAVE = os.environ.get("SMTP_CLAVE", "")
+SMTP_SEGURIDAD = os.environ.get("SMTP_SEGURIDAD", "starttls").strip().lower()  # starttls | ssl | ninguna
 
 SISTEMA = f"""Eres el asistente virtual de la web de Forja Gym. Hablas con personas que visitan la web:
 posibles socios y socios actuales.
@@ -160,6 +172,54 @@ def guardar_contacto(c: dict):
                                c["mensaje"]])
 
 
+def enviar_a_webhook(c: dict):
+    """Envía el contacto a una URL (Google Sheets con Apps Script, Zapier, Make, n8n...)."""
+    datos = json.dumps({"fecha": datetime.now().strftime("%d/%m/%Y %H:%M"), **c}, ensure_ascii=False).encode("utf-8")
+    peticion = urllib.request.Request(WEBHOOK_CONTACTOS, data=datos, method="POST",
+                                      headers={"Content-Type": "application/json; charset=utf-8"})
+    with urllib.request.urlopen(peticion, timeout=10) as respuesta:
+        respuesta.read()
+
+
+def enviar_por_email(c: dict):
+    """Envía el contacto por correo al negocio usando su servidor SMTP."""
+    correo = EmailMessage()
+    correo["Subject"] = f"Nuevo contacto desde el chat: {c['nombre']}"
+    correo["From"] = SMTP_USUARIO or CORREO_DESTINO
+    correo["To"] = CORREO_DESTINO
+    correo.set_content(
+        f"Alguien ha pedido que le llamen desde el chat de la web.\n\n"
+        f"Nombre:   {c['nombre']}\n"
+        f"Contacto: {c['contacto']}\n"
+        f"Pregunta: {c['mensaje'] or '(sin pregunta previa)'}\n"
+        f"Fecha:    {datetime.now():%d/%m/%Y %H:%M}\n"
+    )
+    if SMTP_SEGURIDAD == "ssl":
+        conexion = smtplib.SMTP_SSL(SMTP_HOST, SMTP_PUERTO, timeout=15)
+    else:
+        conexion = smtplib.SMTP(SMTP_HOST, SMTP_PUERTO, timeout=15)
+    with conexion:
+        if SMTP_SEGURIDAD == "starttls":
+            conexion.starttls()
+        if SMTP_USUARIO:
+            conexion.login(SMTP_USUARIO, SMTP_CLAVE)
+        conexion.send_message(correo)
+
+
+def avisar_contacto(c: dict):
+    """Reenvía el contacto fuera del servidor para que no se pierda si el hosting se reinicia.
+    Se ejecuta en segundo plano: el visitante no espera y un fallo aquí no rompe el chat."""
+    for nombre, activo, funcion in (("webhook", bool(WEBHOOK_CONTACTOS), enviar_a_webhook),
+                                    ("email", bool(SMTP_HOST and CORREO_DESTINO), enviar_por_email)):
+        if not activo:
+            continue
+        try:
+            funcion(c)
+            print(f"📤 Contacto enviado por {nombre}", flush=True)
+        except Exception as e:
+            print(f"❌ No se pudo enviar el contacto por {nombre}: {e!r}", flush=True)
+
+
 # ---------------------------------------------------------------
 # LÍMITE DE USO POR VISITANTE
 # ---------------------------------------------------------------
@@ -250,7 +310,8 @@ class Manejador(SimpleHTTPRequestHandler):
         except OSError as e:
             print(f"❌ No se pudo guardar el contacto: {e!r}")
             return self.enviar_json(500, {"error": "No se pudo guardar"})
-        print(f"📇 Nuevo contacto guardado: {contacto['nombre']}")
+        print(f"📇 Nuevo contacto guardado: {contacto['nombre']}", flush=True)
+        threading.Thread(target=avisar_contacto, args=(contacto,), daemon=True).start()
         return self.enviar_json(200, {"ok": True})
 
     def post_chat(self):

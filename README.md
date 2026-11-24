@@ -44,7 +44,24 @@ Para usar el chat desde una web alojada en otro sitio, se añade antes de `chatb
 <script>window.CHATBOT_SERVIDOR = "https://mi-servidor.com";</script>
 ```
 
-> En hostings gratuitos el disco se borra al reiniciar: para conservar los contactos hace falta un disco persistente o enviarlos por email o a una hoja de cálculo.
+## Conservar los contactos
+En muchos hostings el disco se borra al reiniciar, y con él `contactos.csv`. Por eso cada contacto se puede reenviar fuera del servidor en el momento en que llega. Ambas opciones son opcionales y se pueden combinar:
+
+| Variable | Uso |
+|---|---|
+| `WEBHOOK_CONTACTOS` | URL que recibe cada contacto en JSON (`fecha`, `nombre`, `contacto`, `mensaje`). Sirve para Google Sheets, Zapier, Make o n8n. |
+| `CORREO_DESTINO` | Correo del negocio que recibirá un aviso por cada contacto. |
+| `SMTP_HOST`, `SMTP_PUERTO`, `SMTP_USUARIO`, `SMTP_CLAVE` | Servidor de correo desde el que se envía el aviso. |
+| `SMTP_SEGURIDAD` | `starttls` (por defecto), `ssl` o `ninguna`. |
+
+**Google Sheets en 2 minutos:** en la hoja, *Extensiones → Apps Script*, pega esto, publícalo como *Aplicación web* y usa su URL en `WEBHOOK_CONTACTOS`:
+```javascript
+function doPost(e) {
+  const c = JSON.parse(e.postData.contents);
+  SpreadsheetApp.getActiveSheet().appendRow([c.fecha, c.nombre, c.contacto, c.mensaje]);
+  return ContentService.createTextOutput("ok");
+}
+```
 
 ## Tecnologías
 Python · API de Claude (SDK oficial `anthropic`) · JavaScript (fetch, DOM) · HTML/CSS
