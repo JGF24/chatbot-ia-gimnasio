@@ -66,6 +66,22 @@
   font-size: .8rem; font-family: inherit; cursor: pointer;
 }
 .chip:hover { background: var(--color-primario); }
+.chip--destacado { background: var(--color-primario); font-weight: 600; }
+
+/* Formulario «Que me llamen» dentro del chat */
+.chat-contacto { display: grid; gap: 8px; margin-top: 10px; }
+.chat-contacto input {
+  background: var(--fondo); color: var(--texto);
+  border: 1px solid var(--borde); border-radius: 8px;
+  padding: 8px 10px; font-family: inherit; font-size: .9rem;
+}
+.chat-contacto input:focus { outline: none; border-color: var(--color-primario); }
+.chat-contacto button {
+  background: var(--color-primario); color: #fff; border: 0; border-radius: 8px;
+  padding: 8px; font-family: inherit; font-weight: 600; cursor: pointer;
+}
+.chat-contacto button:disabled { opacity: .6; cursor: default; }
+.chat-contacto__error { color: #ff6b81; font-size: .78rem; min-height: 1em; }
 
 .chat__form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--borde); }
 .chat__form input {

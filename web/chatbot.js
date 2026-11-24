@@ -6,8 +6,13 @@
 //   responde con reglas sencillas por palabras clave.
 // =========================================
 (function () {
-  const API = "/api/chat";
+  // Si el servidor del chat está en otro dominio, define antes de cargar este archivo:
+  //   <script>window.CHATBOT_SERVIDOR = "https://mi-servidor.com";</script>
+  const SERVIDOR = (window.CHATBOT_SERVIDOR || "").replace(/\/$/, "");
+  const API = SERVIDOR + "/api/chat";
   let modoIA = false;
+  let hayServidor = false; // ¿Se pueden guardar contactos?
+  let ultimaPregunta = "";  // Se guarda junto al contacto para dar contexto al negocio
   let historial = []; // [{ role: "user" | "assistant", content: "..." }]
 
   // ---------- 1. Crear el HTML del widget ----------
@@ -24,6 +29,7 @@
       </header>
       <div class="chat__mensajes" id="chatMensajes" aria-live="polite"></div>
       <div class="chat__sugerencias" id="chatSugerencias">
+        <button class="chip chip--destacado" id="chatLlamar">📞 Que me llamen</button>
         <button class="chip">¿Qué precios tenéis?</button>
         <button class="chip">Horario de clases</button>
         <button class="chip">¿Cómo me apunto?</button>
@@ -98,6 +104,7 @@
   async function preguntar(texto) {
     texto = texto.trim();
     if (!texto) return;
+    ultimaPregunta = texto;
     pintar(texto, "usuario");
     input.value = "";
     enviar.disabled = true;
@@ -137,14 +144,67 @@
 
   $("chatForm").addEventListener("submit", (e) => { e.preventDefault(); preguntar(input.value); });
   $("chatSugerencias").addEventListener("click", (e) => {
+    if (e.target.id === "chatLlamar") return mostrarFormularioContacto();
     if (e.target.classList.contains("chip")) preguntar(e.target.textContent);
   });
 
-  // ---------- 6. ¿Hay servidor con IA? ----------
-  fetch("/api/estado")
+  // ---------- 6. Formulario «Que me llamen» ----------
+  function mostrarFormularioContacto() {
+    if (document.getElementById("chatContacto")) return; // Ya está abierto
+    const caja = pintar("", "bot");
+    caja.id = "chatContacto";
+    caja.style.whiteSpace = "normal";
+    caja.innerHTML = `
+      <strong>Déjanos tus datos y te llamamos</strong>
+      <form class="chat-contacto" novalidate>
+        <input name="nombre" type="text" placeholder="Tu nombre" maxlength="80" autocomplete="name">
+        <input name="contacto" type="text" placeholder="Teléfono o email" maxlength="120">
+        <small class="chat-contacto__error"></small>
+        <button type="submit">Enviar</button>
+      </form>`;
+    mensajes.scrollTop = mensajes.scrollHeight;
+    const formulario = caja.querySelector("form");
+    const error = caja.querySelector(".chat-contacto__error");
+
+    formulario.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = formulario.nombre.value.trim();
+      const contacto = formulario.contacto.value.trim();
+      const esEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contacto);
+      const esTelefono = /^[0-9\s+()-]{9,20}$/.test(contacto);
+      if (nombre.length < 2) return (error.textContent = "Escribe tu nombre.");
+      if (!esEmail && !esTelefono) return (error.textContent = "Escribe un teléfono o un email válido.");
+      error.textContent = "";
+
+      if (!hayServidor) { // Demo sin servidor: no se guarda nada
+        caja.removeAttribute("id");
+        caja.textContent = `¡Gracias, ${nombre}! En esta demo tus datos no se guardan; en una web real te llamaríamos en menos de 24 horas.`;
+        return;
+      }
+      formulario.querySelector("button").disabled = true;
+      try {
+        const res = await fetch(SERVIDOR + "/api/contacto", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nombre, contacto, mensaje: ultimaPregunta }),
+        });
+        const datos = await res.json();
+        if (!res.ok) throw new Error(datos.error || "No se pudo enviar");
+        caja.removeAttribute("id");
+        caja.textContent = `¡Gracias, ${nombre}! Te llamaremos en menos de 24 horas.`;
+      } catch (err) {
+        error.textContent = err.message || "No se pudo enviar. Inténtalo de nuevo.";
+        formulario.querySelector("button").disabled = false;
+      }
+    });
+    formulario.nombre.focus();
+  }
+
+  // ---------- 7. ¿Hay servidor con IA? ----------
+  fetch(SERVIDOR + "/api/estado")
     .then((r) => (r.ok ? r.json() : Promise.reject()))
-    .then((d) => { modoIA = !!d.ia; })
-    .catch(() => { modoIA = false; })
+    .then((d) => { modoIA = !!d.ia; hayServidor = !!d.contactos; })
+    .catch(() => { modoIA = false; hayServidor = false; })
     .finally(() => {
       $("chatModo").textContent = modoIA ? "● En línea · Responde con IA" : "● En línea · Modo demo";
       pintar("¡Hola! 👋 Soy el asistente de Forja Gym. ¿En qué te puedo ayudar?", "bot");

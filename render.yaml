@@ -1,0 +1,14 @@
+# Despliegue en Render (render.com) con un clic desde el repositorio.
+# La clave de la API NO va aquí: se escribe en el panel de Render.
+services:
+  - type: web
+    name: chatbot-ia-gimnasio
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python servidor.py
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false          # Render la pide al crear el servicio
+      - key: ORIGENES_PERMITIDOS
+        sync: false          # Opcional: dominio de la web del cliente
