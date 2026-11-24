@@ -1,5 +1,7 @@
-# Despliegue en Render (render.com) con un clic desde el repositorio.
-# La clave de la API NO va aquí: se escribe en el panel de Render.
+# Despliegue en Render (render.com) desde el repositorio.
+# La clave de la API NO va aquí: Render la pide al crear el servicio.
+# Si la web del cliente está en otro dominio, añade después en el panel de
+# Render la variable ORIGENES_PERMITIDOS (ej.: https://www.minegocio.com).
 services:
   - type: web
     name: chatbot-ia-gimnasio
@@ -7,8 +9,7 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: python servidor.py
+    healthCheckPath: /api/estado
     envVars:
       - key: ANTHROPIC_API_KEY
-        sync: false          # Render la pide al crear el servicio
-      - key: ORIGENES_PERMITIDOS
-        sync: false          # Opcional: dominio de la web del cliente
+        sync: false
